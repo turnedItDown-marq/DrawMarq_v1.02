@@ -1,0 +1,41 @@
+
+import streamlit as st
+import pdfplumber
+
+st.title("Draw Request Review Bot")
+
+uploaded_files = st.file_uploader(
+    "Upload draw sheet, invoices, and checks",
+    accept_multiple_files=True
+)
+
+def extract_text_from_pdf(file):
+    text = ""
+    with pdfplumber.open(file) as pdf:
+        for page in pdf.pages:
+            text += page.extract_text() or ""
+    return text
+
+if uploaded_files:
+    st.write("Processing files...")
+
+    documents = []
+
+    for file in uploaded_files:
+        text = extract_text_from_pdf(file)
+
+        documents.append({
+            "name": file.name,
+            "text": text
+        })
+
+    st.subheader("Extracted Text")
+
+    for doc in documents:
+        st.write(f"--- {doc['name']} ---")
+        st.write(doc["text"][:300])
+
+    st.subheader("Results")
+
+    st.write("Basic check complete ✅")
+``
